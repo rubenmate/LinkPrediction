@@ -1,4 +1,5 @@
 import networkx as nx
+import math
 import csv
 
 GEXF_FILE = 'social_network_training_1.gexf'
@@ -28,12 +29,14 @@ def predict_link(G, node1, node2):
     neighbors1 = set(G.neighbors(str(node1)))
     neighbors2 = set(G.neighbors(str(node2)))
 
-    common_neighbors = neighbors1.intersection(neighbors2)
+    adamic_adar_index = sum(1 / math.log(G.degree(neighbor)) for neighbor in neighbors1.intersection(neighbors2))
     
-    if len(common_neighbors) > 0:
-        return True  # Predict link exists if common neighbors exist
+    threshold = 0.5  # Modify this threshold as needed
+    
+    if adamic_adar_index > threshold:
+        return True
 
-    return False  # Predict link does not exist if no common neighbors
+    return False
 
 def save_predictions_to_csv(links, filename):
     with open(filename, 'w', newline='') as file:
